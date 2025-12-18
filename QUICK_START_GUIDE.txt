@@ -1,0 +1,166 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                     UNIVERSEG TRAINING - QUICK START                        ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  OPTION 1: Simple - Start Fresh (First Time)                               │
+│─────────────────────────────────────────────────────────────────────────────│
+│                                                                              │
+│  $ cd /thiends/hdd2t/UniverSeg                                              │
+│  $ python scripts1/train_universeg_ovatus.py                                │
+│                                                                              │
+│  ✓ Trains for 50 epochs                                                     │
+│  ✓ Saves checkpoints automatically                                          │
+│  ✓ Shows progress with tqdm                                                 │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  OPTION 2: Smart Launcher (Recommended)                                     │
+│─────────────────────────────────────────────────────────────────────────────│
+│                                                                              │
+│  Resume from latest automatically:                                          │
+│  $ cd /thiends/hdd2t/UniverSeg                                              │
+│  $ python run_training.py --resume                                          │
+│                                                                              │
+│  Resume from specific epoch:                                                │
+│  $ python run_training.py --epoch 10                                        │
+│                                                                              │
+│  Start completely fresh:                                                    │
+│  $ python run_training.py --fresh                                           │
+│                                                                              │
+│  Interactive (asks if you have checkpoints):                                │
+│  $ python run_training.py                                                   │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  CHECKPOINT FILES EXPLANATION                                               │
+│─────────────────────────────────────────────────────────────────────────────│
+│                                                                              │
+│  checkpoints/                                                               │
+│  ├── best_model.pt              ← BEST validation Dice score                │
+│  ├── latest_checkpoint.pt       ← LATEST epoch (for easy resuming)         │
+│  ├── epoch_010_checkpoint.pt    ← Full state at epoch 10                    │
+│  ├── epoch_020_checkpoint.pt    ← Full state at epoch 20                    │
+│  └── ...                                                                    │
+│                                                                              │
+│  Each checkpoint contains:                                                  │
+│  • Model weights                                                            │
+│  • Optimizer state                                                          │
+│  • Scheduler state                                                          │
+│  • Training history (loss, dice)                                            │
+│  • Current epoch                                                            │
+│                                                                              │
+│  For RESUMING → Use "latest_checkpoint.pt" or "epoch_XXX_checkpoint.pt"    │
+│  For INFERENCE → Use "best_model.pt"                                        │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  TRAINING OUTPUT FOLDERS                                                     │
+│─────────────────────────────────────────────────────────────────────────────│
+│                                                                              │
+│  logs/                                                                      │
+│  └── training_20251216_143022.json     ← Metrics (loss, dice per epoch)    │
+│                                                                              │
+│  visualizations_training/                                                   │
+│  ├── epoch_000_batch_000.png                                                │
+│  ├── epoch_000_batch_001.png           ← Visual results during training     │
+│  └── ...                                                                    │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  MONITOR TRAINING PROGRESS                                                   │
+│─────────────────────────────────────────────────────────────────────────────│
+│                                                                              │
+│  During training, you'll see:                                               │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  Epoch  1/50: 45%|████▌     | 23/50 [2:34<3:11, 7.58s/it]                  │
+│  [loss: 0.2145, dice: 0.8234]                                               │
+│                                                                              │
+│  [Epoch  5] Loss: 0.1823 | Val Dice: 0.8567                                 │
+│  ✓ Checkpoint saved: checkpoints/latest_checkpoint.pt                      │
+│                                                                              │
+│  After each validation (every 5 epochs):                                    │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  Train stats:                                                               │
+│    nang_da_thuy          : 0.832±0.124                                      │
+│    nang_don_thuy         : 0.815±0.145                                      │
+│    ...                                                                      │
+│                                                                              │
+│  Val stats:                                                                 │
+│    nang_da_thuy          : 0.821±0.139 (n=45)                               │
+│    ...                                                                      │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  IF TRAINING CRASHES                                                         │
+│─────────────────────────────────────────────────────────────────────────────│
+│                                                                              │
+│  Don't worry! Just resume:                                                  │
+│                                                                              │
+│  $ python run_training.py --resume                                          │
+│                                                                              │
+│  It will:                                                                   │
+│  1. Load latest checkpoint                                                  │
+│  2. Restore optimizer state                                                 │
+│  3. Restore learning rate schedule                                          │
+│  4. Continue from exact epoch                                               │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  AFTER TRAINING COMPLETES                                                    │
+│─────────────────────────────────────────────────────────────────────────────│
+│                                                                              │
+│  Final test results are printed:                                            │
+│  ──────────────────────────────────────────────────────────────────────────  │
+│  TEST RESULTS                                                               │
+│  ═════════════════════════════════════════════════════════════════          │
+│  nang_da_thuy          : 0.834±0.102 (median: 0.854, n=45, good=39, bad=1) │
+│  nang_don_thuy         : 0.821±0.118 (median: 0.843, n=42, good=37, bad=2) │
+│  ...                                                                        │
+│                                                                              │
+│  OVERALL DICE: 0.8241±0.1134                                                │
+│                                                                              │
+│  Then check:                                                                │
+│  • checkpoints/best_model.pt       ← Use this for inference                 │
+│  • logs/training_*.json            ← Review training history                │
+│  • visualizations_training/        ← Review visual results                  │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  TROUBLESHOOTING                                                             │
+│─────────────────────────────────────────────────────────────────────────────│
+│                                                                              │
+│  ❌ CUDA out of memory:                                                      │
+│     → Edit train_universeg_ovatus.py, line 33: BATCH_SIZE = 2              │
+│                                                                              │
+│  ❌ Training very slow:                                                      │
+│     → Run: nvidia-smi (check GPU usage)                                     │
+│     → Make sure line 28 shows "cuda" not "cpu"                              │
+│                                                                              │
+│  ❌ Checkpoint not found:                                                    │
+│     → List checkpoints: ls -lh checkpoints/                                 │
+│     → Start fresh: python run_training.py --fresh                           │
+│                                                                              │
+│  ❌ Can't resume - says checkpoint is corrupted:                             │
+│     → Delete corrupted checkpoint                                           │
+│     → Resume from previous epoch: python run_training.py --epoch 15        │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═════════════════════════════════════════════════════════════════════════════════
+
+TLDR - Just run this:
+
+    $ cd /thiends/hdd2t/UniverSeg
+    $ python run_training.py
+
+That's it! The script handles everything automatically.
+
+═════════════════════════════════════════════════════════════════════════════════
