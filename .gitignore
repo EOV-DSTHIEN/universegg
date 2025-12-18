@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+US_map4
+*.zip
+ visualizations_final_perfect/
+visualizations_results/
+visualizations_results_fixed/
+visualizations_with_aug/
