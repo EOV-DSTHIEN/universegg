@@ -156,8 +156,62 @@ def get_threshold_for_label(label_idx):
     return THRESHOLDS.get(label_name, 0.5)
 
 
-def visualize_results(image, gt_masks, pred_masks, dices, idx, valid_labels):
-    """Visualization with adaptive layout"""
+def calculate_confidence_scores(pred_masks):
+    """Calculate mean confidence (probability) for each label across the image
+    
+    Args:
+        pred_masks: tensor [6, 128, 128] of probabilities
+    
+    Returns:
+        dict: {label_idx: mean_confidence}
+    """
+    confidences = {}
+    for label_idx in range(pred_masks.shape[0]):
+        # Mean probability across the entire image for this label
+        mean_conf = pred_masks[label_idx].mean().item()
+        confidences[label_idx] = mean_conf
+    return confidences
+
+
+def classify_primary_type(pred_masks, valid_labels):
+    """Classify primary type (highest confidence label)
+    
+    Args:
+        pred_masks: tensor [6, 128, 128] of probabilities
+        valid_labels: list of label indices to consider
+    
+    Returns:
+        dict with keys: 'primary_idx', 'primary_name', 'confidence', 'top_3'
+    """
+    confidences = calculate_confidence_scores(pred_masks)
+    
+    if len(valid_labels) == 0:
+        return None
+    
+    # Get confidences for valid labels only
+    valid_confidences = {idx: confidences[idx] for idx in valid_labels}
+    
+    # Sort by confidence descending
+    sorted_labels = sorted(valid_confidences.items(), key=lambda x: x[1], reverse=True)
+    
+    # Primary (highest confidence)
+    primary_idx, primary_conf = sorted_labels[0]
+    primary_name = LABEL_NAMES[primary_idx]
+    
+    # Top 3
+    top_3 = [(LABEL_NAMES[idx], conf) for idx, conf in sorted_labels[:3]]
+    
+    return {
+        'primary_idx': primary_idx,
+        'primary_name': primary_name,
+        'confidence': primary_conf,
+        'top_3': top_3,
+        'all_confidences': valid_confidences
+    }
+
+
+def visualize_results(image, gt_masks, pred_masks, dices, idx, valid_labels, classification=None):
+    """Visualization with adaptive layout and classification info"""
     if len(valid_labels) == 0:
         return
     
